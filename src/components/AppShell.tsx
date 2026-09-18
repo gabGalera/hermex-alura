@@ -1,16 +1,22 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
+import { AuthModal } from '@/components/AuthModal'
+import { CarSearchBar } from '@/components/CarSearchBar'
+import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 
 export function AppShell() {
+  const location = useLocation()
+  const expandedSearch = location.pathname === '/'
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-      <header className="border-b border-slate-800 px-6 py-4">
-        <p className="text-sm font-semibold tracking-wide text-slate-300">
-          Hermex
-        </p>
-      </header>
-      <main className="mx-auto max-w-5xl px-6 py-10">
+    <div className="flex min-h-screen flex-col bg-neutral-white">
+      <Header />
+      <CarSearchBar expanded={expandedSearch} />
+      <div className="flex-1">
         <Outlet />
-      </main>
+      </div>
+      <Footer />
+      <AuthModal />
     </div>
   )
 }

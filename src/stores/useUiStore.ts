@@ -1,13 +1,23 @@
 import { create } from 'zustand'
 
+type AuthModal = 'login' | 'signup' | null
+
 type UiState = {
-  sidebarOpen: boolean
-  setSidebarOpen: (open: boolean) => void
-  toggleSidebar: () => void
+  authModal: AuthModal
+  headerQuery: string
+  pendingReservationId: string | null
+  openAuthModal: (modal: Exclude<AuthModal, null>) => void
+  closeAuthModal: () => void
+  setHeaderQuery: (query: string) => void
+  setPendingReservationId: (id: string | null) => void
 }
 
 export const useUiStore = create<UiState>((set) => ({
-  sidebarOpen: false,
-  setSidebarOpen: (open) => set({ sidebarOpen: open }),
-  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+  authModal: null,
+  headerQuery: '',
+  pendingReservationId: null,
+  openAuthModal: (modal) => set({ authModal: modal }),
+  closeAuthModal: () => set({ authModal: null }),
+  setHeaderQuery: (query) => set({ headerQuery: query }),
+  setPendingReservationId: (id) => set({ pendingReservationId: id }),
 }))
