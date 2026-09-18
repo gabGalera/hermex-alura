@@ -1,0 +1,82 @@
+---
+description: Regras de Estrutura e Arquitetura do Projeto
+alwaysApply: true
+---
+
+# Regras de Estrutura e Arquitetura do Projeto
+
+Organizar o frontend por responsabilidade (domínio), não por tipo genérico de arquivo. Manter a estrutura abaixo e os aliases de importação.
+
+## Estrutura de pastas (`src/`)
+
+```
+src/
+├── components/     # Componentes reutilizáveis de apresentação ou negócio
+├── contexts/       # Provedores de estado globais (React Context)
+├── hooks/          # Hooks customizados contendo lógica de negócio
+├── pages/          # Componentes de rota (um arquivo principal por rota)
+├── services/       # Inicialização de clientes externos (supabase, axios, etc.)
+├── stores/         # Gerenciamento de estado global da aplicação (Zustand)
+├── styles/         # Estilos globais e tokens de design (Tailwind, etc.)
+├── utils/          # Funções puras de apoio e dados (sem estado do React)
+└── types/          # Interfaces e declarações de tipos do TypeScript por domínio
+```
+
+## Onde colocar código
+
+- **Nova tela/rota** → `src/pages/` (um arquivo principal por rota).
+- **UI reutilizável** → `src/components/`. Não criar pastas genéricas como `src/buttons/` ou `src/forms/`.
+- **Lógica reutilizável com estado React** → `src/hooks/`.
+- **Função pura (sem React)** → `src/utils/`.
+- **Cliente HTTP/SDK** → `src/services/` (apenas inicialização e wrappers do cliente).
+- **Estado global** → `src/stores/` (Zustand). Context só em `src/contexts/` quando o padrão do projeto exigir.
+- **Tipos por domínio** → `src/types/`. Não espalhar `types.ts` genéricos na raiz de `src/`.
+
+```
+❌ src/hooks/useFormatDate.ts          // formatação é função pura
+✅ src/utils/formatDate.ts
+
+❌ src/components/useCart.ts            // hook não fica em components
+✅ src/hooks/useCart.ts
+
+❌ src/pages/Button.tsx                 // botão reutilizável não é página
+✅ src/components/Button.tsx
+```
+
+## Imports
+
+Usar o alias `@/` para tudo em `src/`. Não usar imports relativos profundos (`../../../`).
+
+```ts
+✅ import { formatDate } from '@/utils/formatDate'
+✅ import { useCart } from '@/hooks/useCart'
+
+❌ import { formatDate } from '../../../utils/formatDate'
+```
+
+## Configuração obrigatória
+
+Manter o alias `@` → `./src` no Vite e no TypeScript:
+
+```ts
+// vite.config.ts
+import path from 'path'
+
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  }
+})
+```
+
+```json
+// tsconfig (compilerOptions)
+{
+  "baseUrl": ".",
+  "paths": {
+    "@/*": ["src/*"]
+  }
+}
+```
